@@ -200,6 +200,29 @@
         #webcam, #cv-canvas {
             transform: scaleX(-1); /* 镜像翻转 */
         }
+
+	/* --- 新增：针对移动设备的适配 CSS --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px; /* 标题变小 */
+                top: 20px;
+                letter-spacing: 4px;
+            }
+
+            .hint-text {
+                font-size: 12px; /* 提示字变小 */
+                white-space: normal; /* 允许换行！关键！*/
+                padding: 10px 15px;
+                line-height: 1.6;
+                width: 80%; /* 限制宽度 */
+                margin: 0 auto;
+            }
+
+            .upload-wrapper {
+                bottom: 40px;
+                width: 95%;
+            }
+        }
     </style>
 
     <!-- 依赖映射 -->
@@ -372,8 +395,9 @@
                 this.scene.fog = new THREE.FogExp2(0x000000, 0.02); 
 
                 this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-                this.camera.position.set(0, 2, 40);
-
+                const isMobile = window.innerWidth < window.innerHeight;
+                const initialZ = isMobile ? 75 : 40; // 手机退远到75，电脑保持40
+                this.camera.position.set(0, 2, initialZ);
                 // 环境光
                 const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
                 pmremGenerator.compileEquirectangularShader();
@@ -663,6 +687,11 @@
                 window.addEventListener('resize', () => {
                     this.camera.aspect = window.innerWidth / window.innerHeight;
                     this.camera.updateProjectionMatrix();
+
+                    const isMobile = window.innerWidth < window.innerHeight;
+                    this.camera.position.z = isMobile ? 75 : 40;
+
+
                     this.renderer.setSize(window.innerWidth, window.innerHeight);
                     this.composer.setSize(window.innerWidth, window.innerHeight);
                 });
