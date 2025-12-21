@@ -139,28 +139,6 @@
             max-width: 800px;
         }
 
-        .glass-btn {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 12px 30px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 2px;
-            outline: none;
-            text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
-        }
-
-        .glass-btn:hover {
-            background: rgba(0, 255, 136, 0.1);
-            box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
-            text-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
-        }
-
         .hint-text {
             font-family: 'Noto Serif SC', serif;
             font-size: 18px; /* 增大字体 */
@@ -199,7 +177,7 @@
             transform: scaleX(-1); /* 镜像翻转 */
         }
 
-    /* --- 新增：针对移动设备的适配 CSS --- */
+    /* --- 针对移动设备的适配 CSS --- */
         @media (max-width: 768px) {
             h1 {
                 font-size: 28px; /* 标题变小 */
@@ -209,7 +187,7 @@
 
             .hint-text {
                 font-size: 12px; /* 提示字变小 */
-                white-space: normal; /* 允许换行！关键！*/
+                white-space: normal; /* 允许换行 */
                 padding: 10px 15px;
                 line-height: 1.6;
                 width: 80%; /* 限制宽度 */
@@ -232,7 +210,6 @@
         }
     }
     </script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
 
@@ -253,7 +230,8 @@
     </div>
 
     <div class="webcam-container">
-        <video id="webcam" autoplay playsinline style="display:none"></video> <canvas id="cv-canvas" width="160" height="120"></canvas>
+        <video id="webcam" autoplay playsinline style="display:none"></video> 
+        <canvas id="cv-canvas" width="160" height="120"></canvas>
     </div>
 
     <script type="module">
@@ -377,7 +355,7 @@
                 
                 // 电影感色调映射
                 this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                // 降低曝光度，让背景更黑，光效更突出，防止图片过曝
+                // 降低曝光度，让背景更黑，光效更突出
                 this.renderer.toneMappingExposure = 0.8; 
                 this.renderer.shadowMap.enabled = true;
                 this.container.appendChild(this.renderer.domElement);
@@ -390,6 +368,7 @@
                 const isMobile = window.innerWidth < window.innerHeight;
                 const initialZ = isMobile ? 75 : 40; // 手机退远到75，电脑保持40
                 this.camera.position.set(0, 2, initialZ);
+                
                 // 环境光
                 const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
                 pmremGenerator.compileEquirectangularShader();
@@ -415,12 +394,12 @@
                 const renderPass = new RenderPass(this.scene, this.camera);
                 this.composer.addPass(renderPass);
 
-                // Bloom 设置优化：高阈值防止图片发光，低半径让光效更锐利
+                // Bloom 设置优化
                 const bloomPass = new UnrealBloomPass(
                     new THREE.Vector2(window.innerWidth, window.innerHeight),
-                    1.2,  // strength (强度)
-                    0.5,  // radius (光晕半径)
-                    0.85  // threshold (阈值 - 只有非常亮的东西才会发光，保护图片)
+                    1.2,  // strength
+                    0.5,  // radius
+                    0.85  // threshold
                 );
                 this.composer.addPass(bloomPass);
             }
@@ -453,10 +432,10 @@
             }
 
             initContent() {
-                // 量子小球几何体 (二十面体看起来更有科技感)
+                // 量子小球几何体
                 const sphereGeo = new THREE.IcosahedronGeometry(0.12, 0); 
                 
-                // 材质：高发光材质，配合 Bloom
+                // 材质
                 const matGold = new THREE.MeshStandardMaterial({ 
                     color: 0x000000, 
                     emissive: CONFIG.colors.gold, 
@@ -485,31 +464,30 @@
                     let mesh;
                     let mat;
 
-                    // 主要是绿色和金色，少量青色点缀
                     if (r < 0.6) mat = matGreen;
                     else if (r < 0.9) mat = matGold;
                     else mat = matCyan;
 
                     mesh = new THREE.Mesh(sphereGeo, mat);
                     
-                    // 随机微调大小
                     const scale = 0.5 + Math.random() * 0.8;
                     mesh.scale.set(scale, scale, scale);
 
                     this.addParticle(mesh, 'DECOR', { 
                         baseScale: scale,
-                        phase: Math.random() * Math.PI * 2 // 用于呼吸动画
+                        phase: Math.random() * Math.PI * 2 
                     });
                 }
 
                 // 添加顶部的五角星
                 this.initStar();
-                this.initCrystal()
+                // 添加水晶
+                this.initCrystal();
             }
 
             initStar() {
                 const geometry = createStarGeometry();
-                geometry.center(); // 中心化几何体
+                geometry.center(); 
                 
                 const material = new THREE.MeshStandardMaterial({
                     color: CONFIG.colors.gold,
@@ -520,32 +498,27 @@
                 });
                 
                 const mesh = new THREE.Mesh(geometry, material);
-                // 添加为特殊的星星粒子
                 this.addParticle(mesh, 'STAR', { baseScale: 1.5 });
             }
 
-// ... 在 initStar() 函数结束后插入 ...
-
             initCrystal() {
-                // 创建八面体（像钻石一样的水晶形状）
+                // 创建八面体（水晶形状）
                 const geometry = new THREE.OctahedronGeometry(0.8, 0);
                 
                 const material = new THREE.MeshStandardMaterial({
                     color: 0x00FF88,             // 基础绿
                     emissive: 0x00FF88,          // 发光绿
-                    emissiveIntensity: 3.0,      // 强光效果（浪漫氛围）
-                    roughness: 0.0,              // 像玻璃一样光滑
+                    emissiveIntensity: 3.0,      // 强光效果
+                    roughness: 0.0,              // 玻璃般光滑
                     metalness: 0.9,              // 金属质感
                     transparent: true,
                     opacity: 0.8
                 });
                 
                 const mesh = new THREE.Mesh(geometry, material);
-                // 添加为 CRYSTAL 类型，额外参数 spinSpeed 用于自转
-                this.addParticle(mesh, 'CRYSTAL', { baseScale: 5, spinSpeed: Math.random() * 0.05,phase: 0 });
+                this.addParticle(mesh, 'CRYSTAL', { baseScale: 5, spinSpeed: Math.random() * 0.05, phase: 0 });
             }
 
-            // 新增：从 GitHub 加载照片
             async loadGithubPhotos() {
                 this.updateProgress(40, "CONNECTING TO MEMORY CLOUD...");
                 try {
@@ -559,7 +532,6 @@
 
                     const data = await response.json();
                     
-                    // 筛选 JPG 图片
                     const photos = data.filter(file => {
                         const name = file.name.toLowerCase();
                         return name.endsWith('.jpg') || name.endsWith('.jpeg');
@@ -575,28 +547,24 @@
                     const loader = new THREE.TextureLoader();
                     loader.setCrossOrigin('anonymous');
 
-                    // 创建加载任务数组
                     const loadPromises = photos.map(photo => {
                         return new Promise((resolve) => {
-                            // 使用 API 提供的 download_url，通常指向 raw.githubusercontent.com
                             loader.load(
                                 photo.download_url,
                                 (texture) => {
                                     texture.colorSpace = THREE.SRGBColorSpace;
-                                    // 传入 true 表示这是一个外部图片，需要自适应长宽比
                                     this.addPhotoToScene(texture, true); 
                                     resolve();
                                 },
                                 undefined,
                                 (err) => {
                                     console.warn(`Failed to load ${photo.name}`, err);
-                                    resolve(); // 出错也 resolve，不卡死流程
+                                    resolve(); 
                                 }
                             );
                         });
                     });
 
-                    // 等待所有图片尝试加载完成
                     await Promise.all(loadPromises);
 
                 } catch (error) {
@@ -605,13 +573,11 @@
             }
 
             addParticle(mesh, type, extraData = {}) {
-                // 装饰品不产生阴影，只发光，提升性能
                 if (type === 'PHOTO') {
                     mesh.castShadow = true;
                     mesh.receiveShadow = true;
                 }
                 
-                // 初始散落位置分布
                 const phi = Math.acos(-1 + (2 * Math.random()));
                 const theta = Math.sqrt(Math.PI * CONFIG.particles.main) * phi;
                 const r = 10 + Math.random() * 15;
@@ -621,7 +587,6 @@
                 const particle = {
                     mesh: mesh,
                     type: type,
-                    // 增加一点漂浮感的速度
                     velocity: new THREE.Vector3((Math.random()-0.5)*0.01, (Math.random()-0.5)*0.01, (Math.random()-0.5)*0.01),
                     treePos: this.calculateTreePos(this.particles.length, CONFIG.particles.main + 10), 
                     scatterPos: mesh.position.clone(),
@@ -634,7 +599,6 @@
             }
 
             calculateTreePos(index, total) {
-                // 螺旋树形算法
                 const t = index / total;
                 const angle = t * 60 * Math.PI; // 更多圈数
                 const maxRadius = 10;
@@ -652,32 +616,25 @@
                 let width = 2.2;
                 let height = 2.2;
 
-                // 如果是外部照片，根据图片实际比例调整相框形状
                 if (adaptRatio && texture.image) {
                     const aspect = texture.image.width / texture.image.height;
                     if (aspect >= 1) {
-                        // 横构图
                         width = 2.2;
                         height = 2.2 / aspect;
                     } else {
-                        // 竖构图
                         height = 2.2;
                         width = 2.2 * aspect;
                     }
                 }
 
-                // 照片框更薄，更有科技感
                 const geometry = new THREE.BoxGeometry(width, height, 0.05);
                 
-                // 边框材质 (无发光，防止 bloom)
                 const matFrame = new THREE.MeshStandardMaterial({ 
                     color: 0x333333, 
                     roughness: 0.4, 
                     metalness: 0.8 
                 });
 
-                // 图片材质：关键！emissive 设为黑色，防止被 Bloom 算法识别为光源
-                // 提高 roughness 防止反光太强看不清
                 const matPhoto = new THREE.MeshStandardMaterial({ 
                     map: texture, 
                     color: 0xffffff,
@@ -693,7 +650,6 @@
                 ];
                 
                 const mesh = new THREE.Mesh(geometry, materials);
-                // 初始状态把照片藏在树中间
                 this.addParticle(mesh, 'PHOTO', { baseScale: 1 });
             }
 
@@ -704,7 +660,6 @@
 
                     const isMobile = window.innerWidth < window.innerHeight;
                     this.camera.position.z = isMobile ? 75 : 40;
-
 
                     this.renderer.setSize(window.innerWidth, window.innerHeight);
                     this.composer.setSize(window.innerWidth, window.innerHeight);
@@ -732,7 +687,6 @@
                         numHands: 1
                     });
 
-                    // 内部使用 Canvas 绘制视频流，不直接显示 Video
                     const video = document.getElementById('webcam');
                     const canvas = document.getElementById('cv-canvas');
                     const ctx = canvas.getContext('2d');
@@ -760,7 +714,6 @@
                     if (this.visionRunning && video.currentTime !== lastVideoTime) {
                         lastVideoTime = video.currentTime;
                         
-                        // 绘制到小 canvas 用于反馈
                         ctx.save();
                         ctx.scale(-1, 1);
                         ctx.translate(-canvas.width, 0);
@@ -798,39 +751,34 @@
                 STATE.handRotation.y += (targetRotY - STATE.handRotation.y) * 0.1;
 
                 const wrist = lm[0];
-                // const thumbTip = lm[4]; // 这一行可以注释掉或删掉，竖手指不需要拇指数据
                 const indexTip = lm[8];
                 const tips = [lm[8], lm[12], lm[16], lm[20]];
 
                 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
-                // --- 修改开始：计算食指是否竖起 ---
-                // 食指指尖到手腕距离 > 0.3 (伸直)，其他三指平均距离 < 0.25 (弯曲)
+                // 计算食指是否竖起
                 const indexDist = dist(lm[8], wrist);
                 const othersDist = (dist(lm[12], wrist) + dist(lm[16], wrist) + dist(lm[20], wrist)) / 3;
                 const isIndexUp = indexDist > 0.3 && othersDist < 0.25;
-                // --- 修改结束 ---
                 
                 let avgTipDist = 0;
                 tips.forEach(t => avgTipDist += dist(t, wrist));
                 avgTipDist /= 4;
 
                 // 状态机逻辑
-                if (isIndexUp) { // --- 修改：判断条件改为 isIndexUp ---
+                if (isIndexUp) { 
                     STATE.mode = 'FOCUS';
-                    // 如果还没有选定照片，切换到下一张
                     if (!STATE.targetPhoto && this.photos.length > 0) {
                         this.currentPhotoIndex = (this.currentPhotoIndex + 1) % this.photos.length;
                         STATE.targetPhoto = this.photos[this.currentPhotoIndex];
                     }
-                } else if (avgTipDist < 0.2) { // 握拳更紧一点
+                } else if (avgTipDist < 0.2) { // 握拳
                     STATE.mode = 'TREE';
                     STATE.targetPhoto = null;
-                } else if (avgTipDist > 0.35) {
+                } else if (avgTipDist > 0.35) { // 张开手掌
                     STATE.mode = 'SCATTER';
                     STATE.targetPhoto = null;
 
-                    // 第一次触发散落后，移除提示
                     if (!this.hasScattered) {
                         this.hasScattered = true;
                         const hintEl = document.querySelector('.hint-text');
@@ -847,7 +795,6 @@
 
             updateLogic() {
                 const time = this.clock.getElapsedTime();
-                const dt = this.clock.getDelta();
                 const lerpFactor = 0.08; // 更顺滑的动画
 
                 // 整体旋转
@@ -870,43 +817,46 @@
                     let targetPos = new THREE.Vector3();
                     let targetScale = p.baseScale || 1;
 
-                    // 量子呼吸效果 (即使静止也在动)
+                    // 量子呼吸效果
                     const pulse = Math.sin(time * 3 + p.phase) * 0.1 + 0.9;
 
                     if (STATE.mode === 'TREE') {
-                        // 针对照片的特殊逻辑：在树形态下隐藏
                         if (p.type === 'PHOTO') {
                             targetScale = 0.001; 
                             targetPos.copy(p.treePos); 
                         } 
-                        // 针对星星的特殊逻辑：固定在树顶
                         else if (p.type === 'STAR') {
                             targetPos.set(0, 13.5, 0); 
-                            p.mesh.rotation.y += 0.02; // 旋转
-                            p.mesh.rotation.x = 0; // 保持直立
+                            p.mesh.rotation.y += 0.02; 
+                            p.mesh.rotation.x = 0; 
                             p.mesh.rotation.z = 0;
                             targetScale = 1.5;
-                            p.mesh.lookAt(0, 13.5, 50); // 始终朝向大概的前方但保留y旋转
+                            p.mesh.lookAt(0, 13.5, 50); 
                             p.mesh.rotation.y = time * 0.5; // 自转
                         }
-// ... 紧接在 STAR 的判断块后面 ...
-                    
-                    else if (p.type === 'CRYSTAL') {
-                        // 位置：放在树顶 (y=13.5)，并在 y 轴轻微浮动
-                        targetPos.set(0, 13.5, 0); 
-                        
-                        // 姿态：不停地旋转
-                        p.mesh.rotation.y = time * 2.0; 
-                        p.mesh.rotation.x = time * 0.5;
-                        p.mesh.rotation.z = time * 0.25;
-                        
-                        targetScale = 0.7;
-                 }
-                    
-                    // ... 后面是 else { ... } 保持不变 ...
+                        else if (p.type === 'CRYSTAL') {
+                            // 位置：放在树顶 (y=13.5)
+                            targetPos.set(0, 13.5, 0); 
+                            
+                            // 姿态：不停地旋转
+                            p.mesh.rotation.y = time * 2.0; 
+                            p.mesh.rotation.x = time * 0.5;
+                            p.mesh.rotation.z = time * 0.25;
+                            
+                            targetScale = 0.7;
+                        }
                         else {
-                            targetPos.copy(p.treePos);
+                            // 1. 定义旋转速度
+                            const spinSpeed = 0.2; 
+                            const angle = time * spinSpeed;
+
+                            // 2. 将原始的树形位置(treePos)复制一份，然后绕Y轴旋转
+                            targetPos.copy(p.treePos).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+
+                            // 3. 原有的呼吸浮动效果
                             targetPos.y += Math.sin(time * 2 + p.treePos.x) * 0.15;
+                            
+                            // 4. 让粒子始终面朝中心
                             p.mesh.lookAt(0, p.mesh.position.y, 0);
                         }
                         
@@ -935,6 +885,10 @@
                             if (targetPos.z > 10) targetPos.z = 10;
                         }
                     }
+        
+                    if (p.type === 'CRYSTAL' && STATE.mode !== 'TREE') {
+                        targetScale = 0.001;
+                    }
 
                     // 只有装饰球和星星有呼吸效果，照片没有
                     if (p.type !== 'PHOTO') {
@@ -960,6 +914,5 @@
         });
 
     </script>
-<script type="module" src="/index.tsx"></script>
 </body>
 </html>
