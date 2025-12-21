@@ -905,20 +905,8 @@
                     
                     // ... 后面是 else { ... } 保持不变 ...
                         else {
-                            // 1. 定义旋转速度 (数字越小越慢)
-                            const spinSpeed = 0.2; 
-                            const angle = time * spinSpeed;
-                        
-                            // 2. 将原始的树形位置(treePos)复制一份，然后绕Y轴旋转
-                            // 这样树就会动起来，但手势依然可以控制整体倾斜
-                            targetPos.copy(p.treePos).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-                        
-                            // --- 修改结束 ---
-                        
-                            // 3. 原有的呼吸浮动效果保持不变
+                            targetPos.copy(p.treePos);
                             targetPos.y += Math.sin(time * 2 + p.treePos.x) * 0.15;
-                            
-                            // 4. 让粒子始终面朝中心，这样旋转时光影更自然
                             p.mesh.lookAt(0, p.mesh.position.y, 0);
                         }
                         
