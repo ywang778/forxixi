@@ -798,20 +798,34 @@
                 STATE.handRotation.y += (targetRotY - STATE.handRotation.y) * 0.1;
 
                 const wrist = lm[0];
-                // const thumbTip = lm[4]; // 这一行可以注释掉或删掉，竖手指不需要拇指数据
-                const indexTip = lm[8];
-                const tips = [lm[8], lm[12], lm[16], lm[20]];
+// const thumbTip = lm[4]; 
+const indexTip = lm[8];
+const tips = [lm[8], lm[12], lm[16], lm[20]];
 
-                const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
-                // --- 修改开始：计算食指是否竖起 ---
-                // 食指指尖到手腕距离 > 0.3 (伸直)，其他三指平均距离 < 0.25 (弯曲)
-                const indexDist = dist(lm[8], wrist);
-                const othersDist = (dist(lm[12], wrist) + dist(lm[16], wrist) + dist(lm[20], wrist)) / 3;
-                const isIndexUp = indexDist > 0.3 && othersDist < 0.25;
-                // --- 修改结束 ---
-                
-                let avgTipDist = 0;
+// =========== 请替换以下部分 ===========
+
+// 1. 计算手掌基准大小（手腕到中指指根的距离）
+// 这个距离无论你的手离摄像头远近，都是一个很好的参考标尺
+const palmSize = dist(lm[0], lm[9]);
+
+// 2. 计算手指状态
+const indexDist = dist(lm[8], wrist);
+// 计算其他三指（中指、无名指、小指）的平均距离
+const othersDist = (dist(lm[12], wrist) + dist(lm[16], wrist) + dist(lm[20], wrist)) / 3;
+
+// 3. 判定逻辑（使用相对比例，而非绝对数值）
+// - 食指长度是手掌大小的 1.6 倍以上 (说明伸直了)
+// - 食指长度明显大于其他手指 (说明只有食指伸出)
+// - 手掌大小大于 0.02 (防止噪点误判)
+		const isIndexUp = (indexDist > palmSize * 1.6) && 
+                  (indexDist > othersDist * 1.2) && 
+                  (palmSize > 0.02);
+
+// =========== 替换结束 ===========
+
+		let avgTipDist = 0;
                 tips.forEach(t => avgTipDist += dist(t, wrist));
                 avgTipDist /= 4;
 
