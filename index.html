@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        /* CSS 重置与基础设置 */
+        /* --- CSS 重置与基础设置 --- */
         :root {
             --gold: #FFD700;
             --neon-green: #00FF88;
@@ -29,7 +29,7 @@
             user-select: none;
         }
 
-        /* 加载器 (Loader) */
+        /* --- 加载器 (Loader) --- */
         #loader {
             position: fixed;
             top: 0;
@@ -91,7 +91,7 @@
             color: rgba(255, 255, 255, 0.3);
         }
 
-        /* UI 覆盖层 */
+        /* --- UI 覆盖层 --- */
         #ui-layer {
             position: absolute;
             top: 0;
@@ -108,7 +108,7 @@
             top: 40px;
             width: 100%;
             text-align: center;
-            font-family: 'Orbitron', sans-serif; /* 科技感字体 */
+            font-family: 'Orbitron', sans-serif;
             font-size: 48px;
             margin: 0;
             color: #fff;
@@ -141,21 +141,17 @@
 
         .hint-text {
             font-family: 'Noto Serif SC', serif;
-            font-size: 18px; /* 增大字体 */
-            font-weight: bold; /* 加粗 */
-            color: #ffffff; /* 明显的白色 */
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
             letter-spacing: 1.5px;
-            background: rgba(0, 0, 0, 0.7); /* 深色背景增加对比度 */
+            background: rgba(0, 0, 0, 0.7);
             padding: 15px 30px;
-            border-radius: 50px; /* 圆角胶囊样式 */
-            border: 1px solid rgba(0, 255, 136, 0.5); /* 淡淡的绿色边框 */
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* 发光效果 */
+            border-radius: 50px;
+            border: 1px solid rgba(0, 255, 136, 0.5);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(5px);
             white-space: nowrap;
-        }
-
-        #file-input {
-            display: none;
         }
 
         .ui-hidden {
@@ -167,7 +163,7 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
-            opacity: 0.3; /* 降低摄像头预览的干扰 */
+            opacity: 0.3;
             pointer-events: none;
             border: 1px solid var(--neon-green);
             filter: grayscale(100%) contrast(1.2);
@@ -177,20 +173,20 @@
             transform: scaleX(-1); /* 镜像翻转 */
         }
 
-    /* --- 针对移动设备的适配 CSS --- */
+        /* --- 移动设备适配 --- */
         @media (max-width: 768px) {
             h1 {
-                font-size: 28px; /* 标题变小 */
+                font-size: 28px;
                 top: 20px;
                 letter-spacing: 4px;
             }
 
             .hint-text {
-                font-size: 12px; /* 提示字变小 */
-                white-space: normal; /* 允许换行 */
+                font-size: 12px;
+                white-space: normal;
                 padding: 10px 15px;
                 line-height: 1.6;
-                width: 80%; /* 限制宽度 */
+                width: 80%;
                 margin: 0 auto;
             }
 
@@ -271,7 +267,7 @@
             const innerRadius = 0.45;
             
             for (let i = 0; i < points * 2; i++) {
-                const angle = (i * Math.PI) / points - Math.PI / 2; // -Math.PI/2 使尖角朝上
+                const angle = (i * Math.PI) / points - Math.PI / 2;
                 const radius = i % 2 === 0 ? outerRadius : innerRadius;
                 if (i === 0) shape.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
                 else shape.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
@@ -355,29 +351,27 @@
                 
                 // 电影感色调映射
                 this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                // 降低曝光度，让背景更黑，光效更突出
                 this.renderer.toneMappingExposure = 0.8; 
                 this.renderer.shadowMap.enabled = true;
                 this.container.appendChild(this.renderer.domElement);
 
                 this.scene = new THREE.Scene();
-                // 增加一点点环境雾气，营造景深
                 this.scene.fog = new THREE.FogExp2(0x000000, 0.02); 
 
                 this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
                 const isMobile = window.innerWidth < window.innerHeight;
-                const initialZ = isMobile ? 75 : 40; // 手机退远到75，电脑保持40
+                const initialZ = isMobile ? 75 : 40;
                 this.camera.position.set(0, 2, initialZ);
-                
+
                 // 环境光
                 const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
                 pmremGenerator.compileEquirectangularShader();
                 this.scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
-                const ambient = new THREE.AmbientLight(0x111111, 2.0); // 弱环境光
+                const ambient = new THREE.AmbientLight(0x111111, 2.0); 
                 this.scene.add(ambient);
 
-                // 顶部聚光灯 (增加戏剧性)
+                // 顶部聚光灯
                 const spotLight = new THREE.SpotLight(0xffffff, 500);
                 spotLight.position.set(0, 20, 10);
                 spotLight.angle = Math.PI / 4;
@@ -405,7 +399,6 @@
             }
 
             initSnow() {
-                // 创建科技感数码雪花
                 const geometry = new THREE.BufferGeometry();
                 const vertices = [];
                 
@@ -418,7 +411,6 @@
                 
                 geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
                 
-                // 使用点材质
                 const material = new THREE.PointsMaterial({
                     color: 0x00FF88,
                     size: 0.15,
@@ -435,7 +427,6 @@
                 // 量子小球几何体
                 const sphereGeo = new THREE.IcosahedronGeometry(0.12, 0); 
                 
-                // 材质
                 const matGold = new THREE.MeshStandardMaterial({ 
                     color: 0x000000, 
                     emissive: CONFIG.colors.gold, 
@@ -479,9 +470,7 @@
                     });
                 }
 
-                // 添加顶部的五角星
                 this.initStar();
-                // 添加水晶
                 this.initCrystal();
             }
 
@@ -502,20 +491,21 @@
             }
 
             initCrystal() {
-                // 创建八面体（水晶形状）
+                // 创建八面体（像钻石一样的水晶形状）
                 const geometry = new THREE.OctahedronGeometry(0.8, 0);
                 
                 const material = new THREE.MeshStandardMaterial({
-                    color: 0x00FF88,             // 基础绿
-                    emissive: 0x00FF88,          // 发光绿
-                    emissiveIntensity: 3.0,      // 强光效果
-                    roughness: 0.0,              // 玻璃般光滑
-                    metalness: 0.9,              // 金属质感
+                    color: 0x00FF88,            
+                    emissive: 0x00FF88,         
+                    emissiveIntensity: 3.0,     
+                    roughness: 0.0,             
+                    metalness: 0.9,             
                     transparent: true,
                     opacity: 0.8
                 });
                 
                 const mesh = new THREE.Mesh(geometry, material);
+                // 添加为 CRYSTAL 类型，额外参数 spinSpeed 用于自转
                 this.addParticle(mesh, 'CRYSTAL', { baseScale: 5, spinSpeed: Math.random() * 0.05, phase: 0 });
             }
 
@@ -532,6 +522,7 @@
 
                     const data = await response.json();
                     
+                    // 筛选 JPG 图片
                     const photos = data.filter(file => {
                         const name = file.name.toLowerCase();
                         return name.endsWith('.jpg') || name.endsWith('.jpeg');
@@ -599,10 +590,11 @@
             }
 
             calculateTreePos(index, total) {
+                // 螺旋树形算法
                 const t = index / total;
-                const angle = t * 60 * Math.PI; // 更多圈数
+                const angle = t * 60 * Math.PI; 
                 const maxRadius = 10;
-                const radius = maxRadius * (1 - Math.pow(t, 0.8)); // 锥形调整
+                const radius = maxRadius * (1 - Math.pow(t, 0.8)); 
                 const y = (t * 26) - 13;
                 
                 return new THREE.Vector3(
@@ -732,7 +724,6 @@
 
             processGestures(result) {
                 if (!result.landmarks || result.landmarks.length === 0) {
-                    // 没有手时，慢慢回正
                     STATE.handRotation.x *= 0.98;
                     STATE.handRotation.y *= 0.98;
                     return;
@@ -742,24 +733,22 @@
                 const palmX = lm[9].x;
                 const palmY = lm[9].y;
                 
-                // 增加灵敏度
                 const targetRotY = (palmX - 0.5) * -3;
                 const targetRotX = (palmY - 0.5) * 2;
                 
-                // 平滑插值
                 STATE.handRotation.x += (targetRotX - STATE.handRotation.x) * 0.1;
                 STATE.handRotation.y += (targetRotY - STATE.handRotation.y) * 0.1;
 
                 const wrist = lm[0];
-                const indexTip = lm[8];
                 const tips = [lm[8], lm[12], lm[16], lm[20]];
 
                 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
-                // 计算食指是否竖起
+                // --- 逻辑修改：计算食指是否竖起 ---
                 const indexDist = dist(lm[8], wrist);
                 const othersDist = (dist(lm[12], wrist) + dist(lm[16], wrist) + dist(lm[20], wrist)) / 3;
                 const isIndexUp = indexDist > 0.3 && othersDist < 0.25;
+                // --- 逻辑修改结束 ---
                 
                 let avgTipDist = 0;
                 tips.forEach(t => avgTipDist += dist(t, wrist));
@@ -772,10 +761,10 @@
                         this.currentPhotoIndex = (this.currentPhotoIndex + 1) % this.photos.length;
                         STATE.targetPhoto = this.photos[this.currentPhotoIndex];
                     }
-                } else if (avgTipDist < 0.2) { // 握拳
+                } else if (avgTipDist < 0.2) { 
                     STATE.mode = 'TREE';
                     STATE.targetPhoto = null;
-                } else if (avgTipDist > 0.35) { // 张开手掌
+                } else if (avgTipDist > 0.35) {
                     STATE.mode = 'SCATTER';
                     STATE.targetPhoto = null;
 
@@ -795,7 +784,7 @@
 
             updateLogic() {
                 const time = this.clock.getElapsedTime();
-                const lerpFactor = 0.08; // 更顺滑的动画
+                const lerpFactor = 0.08; 
 
                 // 整体旋转
                 this.mainGroup.rotation.x = THREE.MathUtils.lerp(this.mainGroup.rotation.x, STATE.handRotation.x, 0.05);
@@ -803,11 +792,11 @@
 
                 // 更新雪花
                 if (this.snowParticles) {
-                    this.snowParticles.rotation.y = time * 0.05; // 整体旋转
+                    this.snowParticles.rotation.y = time * 0.05; 
                     const positions = this.snowParticles.geometry.attributes.position.array;
                     for(let i=1; i<positions.length; i+=3) {
-                        positions[i] -= 0.05; // 下落
-                        if(positions[i] < -30) positions[i] = 30; // 循环
+                        positions[i] -= 0.05; 
+                        if(positions[i] < -30) positions[i] = 30; 
                     }
                     this.snowParticles.geometry.attributes.position.needsUpdate = true;
                 }
@@ -816,8 +805,6 @@
                 this.particles.forEach(p => {
                     let targetPos = new THREE.Vector3();
                     let targetScale = p.baseScale || 1;
-
-                    // 量子呼吸效果
                     const pulse = Math.sin(time * 3 + p.phase) * 0.1 + 0.9;
 
                     if (STATE.mode === 'TREE') {
@@ -832,57 +819,47 @@
                             p.mesh.rotation.z = 0;
                             targetScale = 1.5;
                             p.mesh.lookAt(0, 13.5, 50); 
-                            p.mesh.rotation.y = time * 0.5; // 自转
+                            p.mesh.rotation.y = time * 0.5; 
                         }
                         else if (p.type === 'CRYSTAL') {
-                            // 位置：放在树顶 (y=13.5)
                             targetPos.set(0, 13.5, 0); 
-                            
-                            // 姿态：不停地旋转
                             p.mesh.rotation.y = time * 2.0; 
                             p.mesh.rotation.x = time * 0.5;
                             p.mesh.rotation.z = time * 0.25;
-                            
                             targetScale = 0.7;
                         }
                         else {
-                            // 1. 定义旋转速度
                             const spinSpeed = 0.2; 
                             const angle = time * spinSpeed;
-
-                            // 2. 将原始的树形位置(treePos)复制一份，然后绕Y轴旋转
                             targetPos.copy(p.treePos).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-
-                            // 3. 原有的呼吸浮动效果
                             targetPos.y += Math.sin(time * 2 + p.treePos.x) * 0.15;
-                            
-                            // 4. 让粒子始终面朝中心
                             p.mesh.lookAt(0, p.mesh.position.y, 0);
                         }
                         
                     } else if (STATE.mode === 'SCATTER') {
                         p.scatterPos.add(p.velocity);
-                        // 边界反弹
                         if (p.scatterPos.length() > 25) p.velocity.negate();
                         
                         targetPos.copy(p.scatterPos);
-                        
-                        // 散落时自转
                         p.mesh.rotation.x += 0.02;
                         p.mesh.rotation.y += 0.02;
 
                     } else if (STATE.mode === 'FOCUS') {
                         if (p === STATE.targetPhoto) {
-                            // 照片飞到镜头前
-                            targetPos.set(0, 0, 32); 
-                            targetScale = 5.0; // 放大
+                            const dist = 8;
+                            const worldTarget = new THREE.Vector3();
+                            this.camera.getWorldDirection(worldTarget); 
+                            worldTarget.multiplyScalar(dist); 
+                            worldTarget.add(this.camera.position); 
+                            this.mainGroup.worldToLocal(worldTarget);
+
+                            targetPos.copy(worldTarget);
+                            
+                            targetScale = 5.0; 
                             p.mesh.lookAt(this.camera.position);
-                            // 修正照片角度使其正对屏幕
                             p.mesh.rotation.z = 0;
                         } else {
-                            // 背景粒子后退并变暗
-                            targetPos.copy(p.scatterPos);
-                            if (targetPos.z > 10) targetPos.z = 10;
+                           targetPos.copy(p.scatterPos);
                         }
                     }
         
@@ -890,7 +867,6 @@
                         targetScale = 0.001;
                     }
 
-                    // 只有装饰球和星星有呼吸效果，照片没有
                     if (p.type !== 'PHOTO') {
                         p.mesh.scale.setScalar(targetScale * pulse);
                     } else {
