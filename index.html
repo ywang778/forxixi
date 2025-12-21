@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOR MY LOVE XIXI </title>
+    <title>FOR MY LOVE XIXI</title>
     
-    <!-- 预加载核心模块 -->
     <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js">
     <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/+esm">
 
-    <!-- 字体引入 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
@@ -201,7 +199,7 @@
             transform: scaleX(-1); /* 镜像翻转 */
         }
 
-	/* --- 新增：针对移动设备的适配 CSS --- */
+    /* --- 新增：针对移动设备的适配 CSS --- */
         @media (max-width: 768px) {
             h1 {
                 font-size: 28px; /* 标题变小 */
@@ -225,7 +223,6 @@
         }
     </style>
 
-    <!-- 依赖映射 -->
     <script type="importmap">
     {
         "imports": {
@@ -239,7 +236,6 @@
 </head>
 <body>
 
-    <!-- 加载屏幕 -->
     <div id="loader">
         <div class="spinner"></div>
         <div class="loader-text">INITIALIZING QUANTUM CORE...</div>
@@ -249,21 +245,17 @@
         <div class="progress-number" id="progress-text">0%</div>
     </div>
 
-    <!-- UI 层 -->
     <div id="ui-layer">
         <h1>FOR <span> MY LOVE XIXI</span></h1>
         <div class="upload-wrapper">
-            <div class="hint-text">（手势控制）握拳朝前：圣诞树 手掌张开：小星星 手指捏合：随机看照片</div>
+            <div class="hint-text">（手势控制）握拳朝前：圣诞树 手掌张开：小星星 竖起食指：看照片٩(๑>◡<๑)٩</div>
         </div>
     </div>
 
-    <!-- 视觉计算容器 -->
     <div class="webcam-container">
-        <video id="webcam" autoplay playsinline style="display:none"></video> <!-- 隐藏原始video，只用canvas -->
-        <canvas id="cv-canvas" width="160" height="120"></canvas>
+        <video id="webcam" autoplay playsinline style="display:none"></video> <canvas id="cv-canvas" width="160" height="120"></canvas>
     </div>
 
-    <!-- 主程序逻辑 -->
     <script type="module">
         import * as THREE from 'three';
         import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -512,6 +504,7 @@
 
                 // 添加顶部的五角星
                 this.initStar();
+                this.initCrystal()
             }
 
             initStar() {
@@ -529,6 +522,27 @@
                 const mesh = new THREE.Mesh(geometry, material);
                 // 添加为特殊的星星粒子
                 this.addParticle(mesh, 'STAR', { baseScale: 1.5 });
+            }
+
+// ... 在 initStar() 函数结束后插入 ...
+
+            initCrystal() {
+                // 创建八面体（像钻石一样的水晶形状）
+                const geometry = new THREE.OctahedronGeometry(0.8, 0);
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0x00FF88,             // 基础绿
+                    emissive: 0x00FF88,          // 发光绿
+                    emissiveIntensity: 3.0,      // 强光效果（浪漫氛围）
+                    roughness: 0.0,              // 像玻璃一样光滑
+                    metalness: 0.9,              // 金属质感
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                const mesh = new THREE.Mesh(geometry, material);
+                // 添加为 CRYSTAL 类型，额外参数 spinSpeed 用于自转
+                this.addParticle(mesh, 'CRYSTAL', { baseScale: 5, spinSpeed: Math.random() * 0.05,phase: 0 });
             }
 
             // 新增：从 GitHub 加载照片
@@ -784,20 +798,25 @@
                 STATE.handRotation.y += (targetRotY - STATE.handRotation.y) * 0.1;
 
                 const wrist = lm[0];
-                const thumbTip = lm[4];
+                // const thumbTip = lm[4]; // 这一行可以注释掉或删掉，竖手指不需要拇指数据
                 const indexTip = lm[8];
                 const tips = [lm[8], lm[12], lm[16], lm[20]];
 
                 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
-                const pinchDist = dist(thumbTip, indexTip);
+                // --- 修改开始：计算食指是否竖起 ---
+                // 食指指尖到手腕距离 > 0.3 (伸直)，其他三指平均距离 < 0.25 (弯曲)
+                const indexDist = dist(lm[8], wrist);
+                const othersDist = (dist(lm[12], wrist) + dist(lm[16], wrist) + dist(lm[20], wrist)) / 3;
+                const isIndexUp = indexDist > 0.3 && othersDist < 0.25;
+                // --- 修改结束 ---
                 
                 let avgTipDist = 0;
                 tips.forEach(t => avgTipDist += dist(t, wrist));
                 avgTipDist /= 4;
 
                 // 状态机逻辑
-                if (pinchDist < 0.05) {
+                if (isIndexUp) { // --- 修改：判断条件改为 isIndexUp ---
                     STATE.mode = 'FOCUS';
                     // 如果还没有选定照片，切换到下一张
                     if (!STATE.targetPhoto && this.photos.length > 0) {
@@ -870,6 +889,21 @@
                             p.mesh.lookAt(0, 13.5, 50); // 始终朝向大概的前方但保留y旋转
                             p.mesh.rotation.y = time * 0.5; // 自转
                         }
+// ... 紧接在 STAR 的判断块后面 ...
+                    
+                    else if (p.type === 'CRYSTAL') {
+                        // 位置：放在树顶 (y=13.5)，并在 y 轴轻微浮动
+                        targetPos.set(0, 13.5, 0); 
+                        
+                        // 姿态：不停地旋转
+                        p.mesh.rotation.y = time * 2.0; 
+                        p.mesh.rotation.x = time * 0.5;
+                        p.mesh.rotation.z = time * 0.25;
+                        
+                        targetScale = 0.7;
+                 }
+                    
+                    // ... 后面是 else { ... } 保持不变 ...
                         else {
                             targetPos.copy(p.treePos);
                             targetPos.y += Math.sin(time * 2 + p.treePos.x) * 0.15;
